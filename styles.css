@@ -173,6 +173,10 @@ input[type="number"]::-webkit-inner-spin-button {
   font-size: 0.8rem;
 }
 
+.btn.primary.subtle-btn {
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.55);
+}
+
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 26px rgba(15, 23, 42, 0.7);
