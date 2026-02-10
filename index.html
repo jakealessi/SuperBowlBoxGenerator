@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Super Bowl Box Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>Super Bowl Box Generator</h1>
+      <p>Create and randomize a 10×10 Super Bowl squares grid.</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <h2>Participants & Boxes</h2>
+        <div id="participants"></div>
+        <button id="add-participant" class="btn secondary">Add Participant</button>
+        <div class="summary-row">
+          <span>Total Boxes Assigned:</span>
+          <span id="total-boxes">0 / 100</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Game Settings</h2>
+        <div class="field team-fields">
+          <label>Team on top (columns)</label>
+          <input type="text" id="team-top" placeholder="e.g. Chiefs" />
+        </div>
+        <div class="field team-fields">
+          <label>Team on left (rows)</label>
+          <input type="text" id="team-left" placeholder="e.g. 49ers" />
+        </div>
+        <div class="field">
+          <label>Box Price ($)</label>
+          <input type="number" id="box-price" min="0" step="0.01" value="10" />
+        </div>
+
+        <div class="field">
+          <label>Payout Split</label>
+          <select id="payout-split">
+            <option value="25,25,25,25">Even 25% / 25% / 25% / 25%</option>
+            <option value="20,20,20,40">Q1 20% / Q2 20% / Q3 20% / Final 40%</option>
+            <option value="15,30,15,40">Q1 15% / Q2 30% / Q3 15% / Final 40%</option>
+            <option value="15,15,15,55">Q1 15% / Q2 15% / Q3 15% / Final 55%</option>
+            <option value="10,10,10,70">Q1 10% / Q2 10% / Q3 10% / Final 70%</option>
+            <option value="10,20,10,60">Q1 10% / Q2 20% / Q3 10% / Final 60%</option>
+            <option value="5,15,5,75">Q1 5% / Q2 15% / Q3 5% / Final 75%</option>
+            <option value="0,0,0,100">Final only 100%</option>
+            <option value="0,30,0,70">Halftime 30% / Final 70%</option>
+            <option value="0,50,0,50">Halftime 50% / Final 50%</option>
+            <option value="0,25,0,75">Halftime 25% / Final 75%</option>
+          </select>
+        </div>
+
+        <div class="field checkbox-row">
+          <label>
+            <input type="checkbox" id="use-vig" />
+            Take a vig (house cut)
+          </label>
+        </div>
+
+        <div class="vig-options" id="vig-options">
+          <div class="field">
+            <label>Vig % (of total pot)</label>
+            <input type="number" id="vig-percent" min="0" max="50" step="1" value="0" />
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <span>Total Pot (before vig):</span>
+          <span id="total-pot">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>House Vig:</span>
+          <span id="vig-amount">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Payout Pool:</span>
+          <span id="payout-pool">$0.00</span>
+        </div>
+
+        <button id="generate-grid" class="btn primary">Generate Grid</button>
+      </section>
+    </main>
+
+    <section class="panel full-width">
+      <h2>Generated Grid</h2>
+      <p class="hint">Numbers are randomized 0–9 for each team. Click “Generate Grid” again to reshuffle.</p>
+      <div class="grid-and-info">
+        <div id="grid-container"></div>
+        <div class="payouts">
+          <h3>Payouts</h3>
+          <ul id="payout-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <span>Built for easy, fair Super Bowl squares.</span>
+    </footer>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
+
