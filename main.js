@@ -35,28 +35,28 @@ const STORAGE_KEYS = {
 
 let lastConfigString = null;
 
-// Soft, slightly brighter colors per participant (still readable on dark theme)
+// Pastel colors per participant (readable on dark theme)
 const PARTICIPANT_COLORS = [
-  "#60a5fa", // soft blue
-  "#a78bfa", // soft purple
-  "#34d399", // emerald
-  "#fbbf24", // amber
-  "#fb7185", // soft red
-  "#22c55e", // green
-  "#38bdf8", // cyan
-  "#e879f9", // pink
-  "#f97316", // orange
-  "#4ade80", // light green
-  "#2dd4bf", // teal
-  "#facc15", // yellow
-  "#c4b5fd", // lavender
-  "#f472b6", // rose
-  "#93c5fd", // light blue
-  "#a3e635", // lime
-  "#fda4af", // light red
-  "#67e8f9", // light cyan
-  "#bef264", // lighter lime
-  "#ddd6fe", // pale lavender
+  "#93c5fd", // pastel blue
+  "#c4b5fd", // pastel purple
+  "#86efac", // pastel green
+  "#fde047", // pastel yellow
+  "#fca5a5", // pastel red
+  "#6ee7b7", // pastel mint
+  "#a5b4fc", // pastel indigo
+  "#f9a8d4", // pastel pink
+  "#fdba74", // pastel orange
+  "#a7f3d0", // pastel emerald
+  "#7dd3fc", // pastel sky
+  "#fcd34d", // pastel amber
+  "#ddd6fe", // pastel lavender
+  "#fbcfe8", // pastel rose
+  "#bfdbfe", // pastel light blue
+  "#d1fae5", // pastel mint green
+  "#fed7aa", // pastel peach
+  "#cffafe", // pastel cyan
+  "#fef3c7", // pastel cream
+  "#e9d5ff", // pastel violet
 ];
 
 function formatCurrency(amount) {
@@ -205,7 +205,7 @@ function loadFromStorage() {
       const [q1, q2, q3, q4] = config.payoutSplit.split(",").map((n) => parseFloat(n));
       const option = document.createElement("option");
       option.value = config.payoutSplit;
-      option.textContent = `Custom: Q1 ${q1}% / Q2 ${q2}% / Q3 ${q3}% / Final ${q4}%`;
+      option.textContent = `Q1 ${q1}% / Q2 ${q2}% / Q3 ${q3}% / Final ${q4}%`;
       option.dataset.custom = "true";
       payoutSplitEl.appendChild(option);
       payoutSplitEl.value = config.payoutSplit;
@@ -225,6 +225,22 @@ function loadFromStorage() {
     if (customQ2El) customQ2El.value = config.customSplitInputs.q2 || "";
     if (customQ3El) customQ3El.value = config.customSplitInputs.q3 || "";
     if (customQ4El) customQ4El.value = config.customSplitInputs.q4 || "";
+  } else if (config.payoutSplit && customQ1El && customQ2El && customQ3El && customQ4El) {
+    // If we have a payout split but no stored custom inputs, derive defaults from the split
+    const parts = config.payoutSplit.split(",").map((v) => parseFloat(v));
+    if (parts.length === 4 && parts.every((n) => !Number.isNaN(n))) {
+      [customQ1El.value, customQ2El.value, customQ3El.value, customQ4El.value] = parts.map((n) =>
+        String(n)
+      );
+    }
+  } else if (customQ1El && customQ2El && customQ3El && customQ4El) {
+    // As a final fallback, ensure sensible defaults are visible
+    if (!customQ1El.value && !customQ2El.value && !customQ3El.value && !customQ4El.value) {
+      customQ1El.value = "15";
+      customQ2El.value = "30";
+      customQ3El.value = "15";
+      customQ4El.value = "40";
+    }
   }
 
   lastConfigString = JSON.stringify(getConfigForSave());
@@ -310,7 +326,7 @@ function applyCustomSplit() {
   if (!option) {
     option = document.createElement("option");
     option.value = value;
-    option.textContent = `Custom: Q1 ${q1}% / Q2 ${q2}% / Q3 ${q3}% / Final ${q4}%`;
+    option.textContent = `Q1 ${q1}% / Q2 ${q2}% / Q3 ${q3}% / Final ${q4}%`;
     option.dataset.custom = "true";
     payoutSplitEl.appendChild(option);
   }
@@ -577,7 +593,8 @@ generateGridBtn.addEventListener("click", () => {
 
 if (toggleCleanViewBtn) {
   toggleCleanViewBtn.addEventListener("click", () => {
-    document.body.classList.toggle("clean-view");
+    const isClean = document.body.classList.toggle("clean-view");
+    toggleCleanViewBtn.textContent = isClean ? "Exit Clean View" : "Clean / Print View";
   });
 }
 
