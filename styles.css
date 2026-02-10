@@ -168,6 +168,11 @@ input[type="number"]::-webkit-inner-spin-button {
   color: var(--muted);
 }
 
+.btn.subtle-btn {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 26px rgba(15, 23, 42, 0.7);
@@ -198,11 +203,19 @@ input[type="number"]::-webkit-inner-spin-button {
   font-variant-numeric: tabular-nums;
 }
 
+.summary-row .warning {
+  color: var(--danger);
+}
+
 #participants {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-bottom: 10px;
+}
+
+.team-fields input {
+  width: 100%;
 }
 
 .participant-row {
@@ -243,11 +256,24 @@ input[type="number"]::-webkit-inner-spin-button {
   align-items: flex-start;
 }
 
+.grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
 .hint {
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+.subtle-hint {
+  margin-top: 4px;
+  font-size: 0.78rem;
 }
 
 #grid-container {
@@ -376,6 +402,32 @@ input[type="number"]::-webkit-inner-spin-button {
   border-top: 1px solid rgba(31, 41, 55, 0.6);
 }
 
+.custom-split-inputs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.custom-split-inputs input[type="number"] {
+  width: 100%;
+}
+
+.custom-split-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.hint-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.hint-text.error {
+  color: var(--danger);
+}
+
 .payouts {
   background: radial-gradient(circle at top, #020617 0, #020617 55%, #020617 75%);
   border-radius: var(--radius-md);
@@ -408,6 +460,34 @@ input[type="number"]::-webkit-inner-spin-button {
   text-align: center;
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+/* Clean / print view */
+.clean-view .app-header,
+.clean-view .layout {
+  display: none;
+}
+
+.clean-view .app-footer {
+  opacity: 0.4;
+}
+
+@media print {
+  .app-header,
+  .layout,
+  .app-footer,
+  .hint.subtle-hint {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .panel.full-width {
+    box-shadow: none;
+    border-radius: 0;
+  }
 }
 
 @media (max-width: 900px) {

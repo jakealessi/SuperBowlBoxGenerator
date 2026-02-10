@@ -18,6 +18,7 @@
         <h2>Participants & Boxes</h2>
         <div id="participants"></div>
         <button id="add-participant" class="btn secondary">Add Participant</button>
+        <button id="fill-remaining" class="btn secondary subtle-btn">Fill remaining to 100</button>
         <div class="summary-row">
           <span>Total Boxes Assigned:</span>
           <span id="total-boxes">0 / 100</span>
@@ -56,6 +57,20 @@
           </select>
         </div>
 
+        <div class="field custom-split">
+          <label>Custom payout split (must total 100%)</label>
+          <div class="custom-split-inputs">
+            <input type="number" id="custom-q1" min="0" max="100" step="1" placeholder="Q1 %" />
+            <input type="number" id="custom-q2" min="0" max="100" step="1" placeholder="Q2 %" />
+            <input type="number" id="custom-q3" min="0" max="100" step="1" placeholder="Q3 %" />
+            <input type="number" id="custom-q4" min="0" max="100" step="1" placeholder="Final %" />
+          </div>
+          <div class="custom-split-actions">
+            <button id="apply-custom-split" class="btn secondary subtle-btn">Use custom split</button>
+            <span id="custom-split-hint" class="hint-text"></span>
+          </div>
+        </div>
+
         <div class="field checkbox-row">
           <label>
             <input type="checkbox" id="use-vig" />
@@ -84,11 +99,15 @@
         </div>
 
         <button id="generate-grid" class="btn primary">Generate Grid</button>
+        <p id="generate-hint" class="hint subtle-hint"></p>
       </section>
     </main>
 
     <section class="panel full-width">
-      <h2>Generated Grid</h2>
+      <div class="grid-header">
+        <h2>Generated Grid</h2>
+        <button id="toggle-clean-view" class="btn secondary subtle-btn">Clean / Print View</button>
+      </div>
       <p class="hint">Numbers are randomized 0–9 for each team. Click “Generate Grid” again to reshuffle.</p>
       <div class="grid-and-info">
         <div id="grid-container"></div>

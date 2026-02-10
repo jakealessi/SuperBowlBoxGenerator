@@ -5,6 +5,7 @@ function $(selector) {
 const participantsEl = $("#participants");
 const addParticipantBtn = $("#add-participant");
 const totalBoxesEl = $("#total-boxes");
+const fillRemainingBtn = $("#fill-remaining");
 const teamTopEl = $("#team-top");
 const teamLeftEl = $("#team-left");
 const boxPriceEl = $("#box-price");
@@ -16,8 +17,16 @@ const totalPotEl = $("#total-pot");
 const vigAmountEl = $("#vig-amount");
 const payoutPoolEl = $("#payout-pool");
 const generateGridBtn = $("#generate-grid");
+const generateHintEl = $("#generate-hint");
 const gridContainerEl = $("#grid-container");
 const payoutListEl = $("#payout-list");
+const toggleCleanViewBtn = $("#toggle-clean-view");
+const customQ1El = $("#custom-q1");
+const customQ2El = $("#custom-q2");
+const customQ3El = $("#custom-q3");
+const customQ4El = $("#custom-q4");
+const applyCustomSplitBtn = $("#apply-custom-split");
+const customSplitHintEl = $("#custom-split-hint");
 
 // Neutral, muted colors per participant (readable on dark theme)
 const PARTICIPANT_COLORS = [
@@ -110,6 +119,71 @@ function recalcTotals() {
 
   generateGridBtn.disabled = totalBoxes !== 100 || payoutPool === 0;
   generatePayoutsList(payoutPool);
+
+  // Validation styling & hint
+  if (totalBoxes !== 100) {
+    totalBoxesEl.classList.add("warning");
+  } else {
+    totalBoxesEl.classList.remove("warning");
+  }
+
+  if (generateHintEl) {
+    if (totalBoxes !== 100) {
+      generateHintEl.textContent = "Assign exactly 100 boxes to enable generation.";
+    } else if (payoutPool === 0) {
+      generateHintEl.textContent = "Set a box price above $0.00 to create a payout pool.";
+    } else {
+      generateHintEl.textContent = `Ready: 100 boxes × ${formatCurrency(
+        boxPrice
+      )} = ${formatCurrency(totalPot)} total pot. Payout pool ${formatCurrency(payoutPool)}.`;
+    }
+  }
+}
+
+function applyCustomSplit() {
+  if (!customQ1El || !customQ2El || !customQ3El || !customQ4El) return;
+
+  const q1 = parseFloat(customQ1El.value || "0");
+  const q2 = parseFloat(customQ2El.value || "0");
+  const q3 = parseFloat(customQ3El.value || "0");
+  const q4 = parseFloat(customQ4El.value || "0");
+  const total = q1 + q2 + q3 + q4;
+
+  if (Number.isNaN(total) || total !== 100) {
+    if (customSplitHintEl) {
+      customSplitHintEl.textContent = "Custom split must add up to exactly 100%.";
+      customSplitHintEl.classList.add("error");
+    }
+    return;
+  }
+
+  const value = `${q1},${q2},${q3},${q4}`;
+
+  // Remove any previous custom option
+  const options = Array.from(payoutSplitEl.options);
+  options.forEach((opt) => {
+    if (opt.dataset && opt.dataset.custom === "true") {
+      opt.remove();
+    }
+  });
+
+  let option = options.find((opt) => opt.value === value);
+  if (!option) {
+    option = document.createElement("option");
+    option.value = value;
+    option.textContent = `Custom: Q1 ${q1}% / Q2 ${q2}% / Q3 ${q3}% / Final ${q4}%`;
+    option.dataset.custom = "true";
+    payoutSplitEl.appendChild(option);
+  }
+
+  payoutSplitEl.value = value;
+
+  if (customSplitHintEl) {
+    customSplitHintEl.textContent = "Custom split applied.";
+    customSplitHintEl.classList.remove("error");
+  }
+
+  recalcTotals();
 }
 
 function generatePayoutsList(payoutPool) {
@@ -299,6 +373,37 @@ addParticipantBtn.addEventListener("click", () => {
   recalcTotals();
 });
 
+if (fillRemainingBtn) {
+  fillRemainingBtn.addEventListener("click", () => {
+    const participants = getParticipants();
+    if (!participants.length) {
+      alert("Add at least one participant before filling remaining boxes.");
+      return;
+    }
+
+    const totalBoxes = participants.reduce((sum, p) => sum + p.count, 0);
+    if (totalBoxes >= 100) {
+      alert("There are already 100 (or more) boxes assigned.");
+      return;
+    }
+
+    const remaining = 100 - totalBoxes;
+
+    // Find the last row with a non-empty name input
+    const rows = Array.from(participantsEl.querySelectorAll(".participant-row"));
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const [nameInput, countInput] = rows[i].querySelectorAll("input");
+      if (nameInput.value.trim()) {
+        const current = parseInt(countInput.value || "0", 10);
+        countInput.value = String(current + remaining);
+        break;
+      }
+    }
+
+    recalcTotals();
+  });
+}
+
 boxPriceEl.addEventListener("input", recalcTotals);
 payoutSplitEl.addEventListener("change", () => {
   recalcTotals();
@@ -320,6 +425,19 @@ generateGridBtn.addEventListener("click", () => {
   if (!confirm("Generate a new grid? This will randomize all box assignments and numbers.")) return;
   generateGrid();
 });
+
+if (toggleCleanViewBtn) {
+  toggleCleanViewBtn.addEventListener("click", () => {
+    document.body.classList.toggle("clean-view");
+  });
+}
+
+if (applyCustomSplitBtn) {
+  applyCustomSplitBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    applyCustomSplit();
+  });
+}
 
 addParticipantRow("Alice", 25);
 addParticipantRow("Bob", 25);
