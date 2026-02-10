@@ -253,19 +253,18 @@ function recalcTotals() {
   totalBoxesEl.textContent = `${totalBoxes} / 100`;
 
   const boxPrice = parseFloat(boxPriceEl.value || "0");
-  const totalPot = boxPrice * totalBoxes;
-  totalPotEl.textContent = formatCurrency(totalPot);
+  const grossPot = boxPrice * totalBoxes;
 
   const useVig = useVigEl.checked;
   let vigAmount = 0;
   if (useVig) {
     const vigPercent = Math.max(0, Math.min(50, parseFloat(vigPercentEl.value || "0")));
-    vigAmount = (vigPercent / 100) * totalPot;
+    vigAmount = (vigPercent / 100) * grossPot;
   }
 
-  const payoutPool = Math.max(0, totalPot - vigAmount);
+  const payoutPool = Math.max(0, grossPot - vigAmount);
+  totalPotEl.textContent = formatCurrency(payoutPool);
   vigAmountEl.textContent = formatCurrency(vigAmount);
-  payoutPoolEl.textContent = formatCurrency(payoutPool);
 
   generateGridBtn.disabled = totalBoxes !== 100 || payoutPool === 0;
   generatePayoutsList(payoutPool);
@@ -499,14 +498,14 @@ function generateGrid() {
 
   // Summary below grid: payout amount and all info except vig
   const boxPrice = parseFloat(boxPriceEl.value || "0");
-  const totalPot = 100 * boxPrice;
+  const grossPot = 100 * boxPrice;
   const useVig = useVigEl.checked;
   let vigAmount = 0;
   if (useVig) {
     const vigPercent = Math.max(0, Math.min(50, parseFloat(vigPercentEl.value || "0")));
-    vigAmount = (vigPercent / 100) * totalPot;
+    vigAmount = (vigPercent / 100) * grossPot;
   }
-  const payoutPool = Math.max(0, totalPot - vigAmount);
+  const payoutPool = Math.max(0, grossPot - vigAmount);
   const payoutLines = getPayoutSummary(payoutPool);
   const splitLabel = payoutSplitEl.options[payoutSplitEl.selectedIndex].textContent;
 
@@ -514,7 +513,7 @@ function generateGrid() {
   summary.className = "grid-summary";
   summary.innerHTML = `
     <div class="grid-summary-row"><span>Box price</span><span>${formatCurrency(boxPrice)}</span></div>
-    <div class="grid-summary-row"><span>Total pot</span><span>${formatCurrency(totalPot)}</span></div>
+    <div class="grid-summary-row"><span>Total pot</span><span>${formatCurrency(payoutPool)}</span></div>
     <div class="grid-summary-row"><span>Payout split</span><span>${splitLabel}</span></div>
     <div class="grid-summary-payouts">
       ${payoutLines.map((l) => `<div class="grid-summary-row"><span>${l.label}</span><span>${formatCurrency(l.amount)}</span></div>`).join("")}
@@ -710,14 +709,14 @@ try {
 
       // Summary below grid: payout amount and all info except vig
       const boxPrice = parseFloat(boxPriceEl.value || "0");
-      const totalPot = 100 * boxPrice;
+      const grossPot = 100 * boxPrice;
       const useVig = useVigEl.checked;
       let vigAmount = 0;
       if (useVig) {
         const vigPercent = Math.max(0, Math.min(50, parseFloat(vigPercentEl.value || "0")));
-        vigAmount = (vigPercent / 100) * totalPot;
+        vigAmount = (vigPercent / 100) * grossPot;
       }
-      const payoutPool = Math.max(0, totalPot - vigAmount);
+      const payoutPool = Math.max(0, grossPot - vigAmount);
       const payoutLines = getPayoutSummary(payoutPool);
       const splitLabel = payoutSplitEl.options[payoutSplitEl.selectedIndex].textContent;
 
@@ -725,7 +724,7 @@ try {
       summary.className = "grid-summary";
       summary.innerHTML = `
         <div class="grid-summary-row"><span>Box price</span><span>${formatCurrency(boxPrice)}</span></div>
-        <div class="grid-summary-row"><span>Total pot</span><span>${formatCurrency(totalPot)}</span></div>
+        <div class="grid-summary-row"><span>Total pot</span><span>${formatCurrency(payoutPool)}</span></div>
         <div class="grid-summary-row"><span>Payout split</span><span>${splitLabel}</span></div>
         <div class="grid-summary-payouts">
           ${payoutLines.map((l) => `<div class="grid-summary-row"><span>${l.label}</span><span>${formatCurrency(l.amount)}</span></div>`).join("")}
