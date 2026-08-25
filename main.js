@@ -15,7 +15,6 @@ const vigOptionsEl = $("#vig-options");
 const vigPercentEl = $("#vig-percent");
 const totalPotEl = $("#total-pot");
 const vigAmountEl = $("#vig-amount");
-const payoutPoolEl = $("#payout-pool");
 const generateGridBtn = $("#generate-grid");
 const generateHintEl = $("#generate-hint");
 const gridContainerEl = $("#grid-container");
@@ -35,28 +34,24 @@ const STORAGE_KEYS = {
 
 let lastConfigString = null;
 
-// Pastel colors per participant (readable on dark theme)
+// Muted print-friendly colors for participant squares
 const PARTICIPANT_COLORS = [
-  "#93c5fd", // pastel blue
-  "#c4b5fd", // pastel purple
-  "#86efac", // pastel green
-  "#fde047", // pastel yellow
-  "#fca5a5", // pastel red
-  "#6ee7b7", // pastel mint
-  "#a5b4fc", // pastel indigo
-  "#f9a8d4", // pastel pink
-  "#fdba74", // pastel orange
-  "#a7f3d0", // pastel emerald
-  "#7dd3fc", // pastel sky
-  "#fcd34d", // pastel amber
-  "#ddd6fe", // pastel lavender
-  "#fbcfe8", // pastel rose
-  "#bfdbfe", // pastel light blue
-  "#d1fae5", // pastel mint green
-  "#fed7aa", // pastel peach
-  "#cffafe", // pastel cyan
-  "#fef3c7", // pastel cream
-  "#e9d5ff", // pastel violet
+  "#b9c7c8",
+  "#c8b49a",
+  "#aebd9e",
+  "#c5a7a2",
+  "#aab4c5",
+  "#c9c09f",
+  "#b8a9bc",
+  "#a6beb4",
+  "#c4b39f",
+  "#b0b9a7",
+  "#b9a4a0",
+  "#a5b7bc",
+  "#c0ae96",
+  "#a8b69a",
+  "#b5a8b9",
+  "#c2b89f",
 ];
 
 function formatCurrency(amount) {
@@ -76,6 +71,7 @@ function addParticipantRow(name = "", count = 0) {
   nameInput.type = "text";
   nameInput.placeholder = "Name";
   nameInput.value = name;
+  nameInput.setAttribute("aria-label", "Player name");
 
   const countInput = document.createElement("input");
   countInput.type = "number";
@@ -83,11 +79,14 @@ function addParticipantRow(name = "", count = 0) {
   countInput.max = "100";
   countInput.step = "1";
   countInput.value = count || "";
+  countInput.placeholder = "0";
+  countInput.setAttribute("aria-label", "Number of boxes");
 
   const removeBtn = document.createElement("button");
   removeBtn.type = "button";
   removeBtn.className = "remove";
   removeBtn.textContent = "Remove";
+  removeBtn.setAttribute("aria-label", name ? `Remove ${name}` : "Remove player");
 
   function onChange() {
     recalcTotals();
@@ -473,8 +472,8 @@ function generateGrid() {
       const bg = owner ? getColorForName(owner, nameToIndex) : "";
       if (bg) {
         cell.style.backgroundColor = bg;
-        cell.style.color = "#0f172a";
-        cell.style.borderColor = "rgba(15, 23, 42, 0.4)";
+      cell.style.color = "#242927";
+      cell.style.borderColor = "rgba(36, 41, 39, 0.45)";
       }
 
       const nameSpan = document.createElement("span");
@@ -483,7 +482,7 @@ function generateGrid() {
       const metaSpan = document.createElement("span");
       metaSpan.className = "meta";
       metaSpan.textContent = `${topNum}-${sideNum}`;
-      if (bg) metaSpan.style.color = "rgba(15, 23, 42, 0.75)";
+      if (bg) metaSpan.style.color = "rgba(36, 41, 39, 0.72)";
 
       cell.appendChild(nameSpan);
       cell.appendChild(metaSpan);
@@ -586,14 +585,15 @@ useVigEl.addEventListener("change", () => {
 vigPercentEl.addEventListener("input", recalcTotals);
 
 generateGridBtn.addEventListener("click", () => {
-  if (!confirm("Generate a new grid? This will randomize all box assignments and numbers.")) return;
+  const isReplacingBoard = !!gridContainerEl.querySelector(".grid");
+  if (isReplacingBoard && !confirm("Generate a new board? This will reshuffle every box and number.")) return;
   generateGrid();
 });
 
 if (toggleCleanViewBtn) {
   toggleCleanViewBtn.addEventListener("click", () => {
     const isClean = document.body.classList.toggle("clean-view");
-    toggleCleanViewBtn.textContent = isClean ? "Exit Clean View" : "Clean / Print View";
+    toggleCleanViewBtn.textContent = isClean ? "Exit print view" : "Print view";
   });
 }
 
@@ -684,8 +684,8 @@ try {
           const bg = owner ? getColorForName(owner, nameToIndex) : "";
           if (bg) {
             cell.style.backgroundColor = bg;
-            cell.style.color = "#0f172a";
-            cell.style.borderColor = "rgba(15, 23, 42, 0.4)";
+            cell.style.color = "#242927";
+            cell.style.borderColor = "rgba(36, 41, 39, 0.45)";
           }
 
           const nameSpan = document.createElement("span");
@@ -694,7 +694,7 @@ try {
           const metaSpan = document.createElement("span");
           metaSpan.className = "meta";
           metaSpan.textContent = `${topNum}-${sideNum}`;
-          if (bg) metaSpan.style.color = "rgba(15, 23, 42, 0.75)";
+          if (bg) metaSpan.style.color = "rgba(36, 41, 39, 0.72)";
 
           cell.appendChild(nameSpan);
           cell.appendChild(metaSpan);
@@ -736,4 +736,3 @@ try {
 } catch {
   // ignore restore failures
 }
-

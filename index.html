@@ -2,119 +2,177 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Super Bowl Box Generator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#e9e2d4" />
+  <meta name="description" content="Build and randomize a 100-box football squares pool." />
+  <title>Super Bowl Squares</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <h1>Super Bowl Box Generator</h1>
-      <p>Create and randomize a 10×10 Super Bowl squares grid.</p>
-    </header>
-
-    <main class="layout">
-      <section class="panel">
-        <h2>Participants & Boxes</h2>
-        <div id="participants"></div>
-        <button id="add-participant" class="btn secondary">Add Participant</button>
-        <button id="fill-remaining" class="btn secondary subtle-btn">Fill remaining to 100</button>
-        <div class="summary-row">
-          <span>Total Boxes Assigned:</span>
-          <span id="total-boxes">0 / 100</span>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-lockup">
+        <span class="brand-mark">SB</span>
+        <div>
+          <h1>Super Bowl Squares</h1>
+          <p>Pool setup and grid generator</p>
         </div>
-      </section>
-
-      <section class="panel">
-        <h2>Game Settings</h2>
-        <div class="field team-fields">
-          <label>Team on top (columns)</label>
-          <input type="text" id="team-top" placeholder="e.g. Chiefs" />
-        </div>
-        <div class="field team-fields">
-          <label>Team on left (rows)</label>
-          <input type="text" id="team-left" placeholder="e.g. 49ers" />
-        </div>
-        <div class="field">
-          <label>Box Price ($)</label>
-          <input type="number" id="box-price" min="0" step="0.01" value="10" />
-        </div>
-
-        <div class="field custom-split">
-          <label>Payout split (must total 100%)</label>
-          <div class="custom-split-inputs">
-            <div class="custom-split-field">
-              <input type="number" id="custom-q1" min="0" max="100" step="1" placeholder="Q1" value="15" />
-              <span class="suffix">%</span>
-            </div>
-            <div class="custom-split-field">
-              <input type="number" id="custom-q2" min="0" max="100" step="1" placeholder="Q2" value="30" />
-              <span class="suffix">%</span>
-            </div>
-            <div class="custom-split-field">
-              <input type="number" id="custom-q3" min="0" max="100" step="1" placeholder="Q3" value="15" />
-              <span class="suffix">%</span>
-            </div>
-            <div class="custom-split-field">
-              <input type="number" id="custom-q4" min="0" max="100" step="1" placeholder="Final" value="40" />
-              <span class="suffix">%</span>
-            </div>
-          </div>
-          <div class="custom-split-actions">
-            <button id="apply-custom-split" class="btn secondary subtle-btn">Use custom split</button>
-            <span id="custom-split-hint" class="hint-text"></span>
-          </div>
-          <!-- Hidden select used internally for payout logic; always reflects the current custom split -->
-          <select id="payout-split" class="payout-select-hidden">
-            <option value="15,30,15,40">15 / 30 / 15 / 40</option>
-          </select>
-        </div>
-
-        <div class="field checkbox-row">
-          <label>
-            <input type="checkbox" id="use-vig" />
-            Take a vig (house cut)
-          </label>
-        </div>
-
-        <div class="vig-options" id="vig-options">
-          <div class="field">
-            <label>Vig % (of total pot)</label>
-            <input type="number" id="vig-percent" min="0" max="50" step="1" value="0" />
-          </div>
-        </div>
-
-        <div class="summary-row">
-          <span>Total Pot:</span>
-          <span id="total-pot">$0.00</span>
-        </div>
-        <div class="summary-row">
-          <span>House Vig:</span>
-          <span id="vig-amount">$0.00</span>
-        </div>
-
-        <button id="generate-grid" class="btn primary subtle-btn">Generate Grid</button>
-        <p id="generate-hint" class="hint subtle-hint"></p>
-      </section>
-    </main>
-
-    <section class="panel full-width">
-      <div class="grid-header">
-        <h2>Generated Grid</h2>
-        <button id="toggle-clean-view" class="btn secondary subtle-btn">Clean / Print View</button>
       </div>
-      <p class="hint">Numbers are randomized 0–9 for each team. Click “Generate Grid” again to reshuffle.</p>
-      <div class="grid-and-info">
-        <div id="grid-container"></div>
+      <div class="header-stat">
+        <span>Board</span>
+        <strong>10 × 10</strong>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="layout">
+      <section class="panel roster-panel">
+        <header class="panel-header">
+          <span class="section-number">01</span>
+          <div class="section-title">
+            <h2>Players</h2>
+            <p>Assign all 100 boxes.</p>
+          </div>
+          <strong id="total-boxes" class="panel-total">0 / 100</strong>
+        </header>
+
+        <div class="panel-body">
+          <div class="participant-columns" aria-hidden="true">
+            <span>Name</span>
+            <span>Boxes</span>
+            <span></span>
+          </div>
+          <div id="participants"></div>
+          <div class="roster-actions">
+            <button id="add-participant" class="btn secondary">Add player</button>
+            <button id="fill-remaining" class="btn text-btn">Fill to 100</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel settings-panel">
+        <header class="panel-header">
+          <span class="section-number">02</span>
+          <div class="section-title">
+            <h2>Pool settings</h2>
+            <p>Teams, price and payouts.</p>
+          </div>
+        </header>
+
+        <div class="panel-body">
+          <div class="team-row">
+            <div class="field">
+              <label for="team-top">Top team</label>
+              <input type="text" id="team-top" placeholder="Team name" />
+            </div>
+            <div class="field">
+              <label for="team-left">Left team</label>
+              <input type="text" id="team-left" placeholder="Team name" />
+            </div>
+          </div>
+
+          <div class="price-row">
+            <div class="field price-field">
+              <label for="box-price">Price per box</label>
+              <div class="prefixed-input">
+                <span>$</span>
+                <input type="number" id="box-price" min="0" step="0.01" value="10" />
+              </div>
+            </div>
+
+            <div class="field vig-field">
+              <label class="checkbox-label" for="use-vig">
+                <input type="checkbox" id="use-vig" />
+                <span>House cut</span>
+              </label>
+              <div class="vig-options" id="vig-options">
+                <div class="suffixed-input">
+                  <input type="number" id="vig-percent" min="0" max="50" step="1" value="0" aria-label="House cut percentage" />
+                  <span>%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field custom-split">
+            <div class="field-heading">
+              <label>Payout split</label>
+              <span>Must total 100%</span>
+            </div>
+            <div class="custom-split-inputs">
+              <label class="custom-split-field">
+                <span>Q1</span>
+                <input type="number" id="custom-q1" min="0" max="100" step="1" value="15" />
+                <b>%</b>
+              </label>
+              <label class="custom-split-field">
+                <span>Q2</span>
+                <input type="number" id="custom-q2" min="0" max="100" step="1" value="30" />
+                <b>%</b>
+              </label>
+              <label class="custom-split-field">
+                <span>Q3</span>
+                <input type="number" id="custom-q3" min="0" max="100" step="1" value="15" />
+                <b>%</b>
+              </label>
+              <label class="custom-split-field">
+                <span>Final</span>
+                <input type="number" id="custom-q4" min="0" max="100" step="1" value="40" />
+                <b>%</b>
+              </label>
+            </div>
+            <div class="custom-split-actions">
+              <button id="apply-custom-split" class="btn secondary compact">Apply split</button>
+              <span id="custom-split-hint" class="hint-text" role="status"></span>
+            </div>
+            <select id="payout-split" class="payout-select-hidden" aria-hidden="true" tabindex="-1">
+              <option value="15,30,15,40">15 / 30 / 15 / 40</option>
+            </select>
+          </div>
+
+          <div class="money-summary">
+            <div>
+              <span>Payout pool</span>
+              <strong id="total-pot">$0.00</strong>
+            </div>
+            <div>
+              <span>House cut</span>
+              <strong id="vig-amount">$0.00</strong>
+            </div>
+          </div>
+
+          <div class="payout-preview">
+            <h3>Quarter payouts</h3>
+            <ul id="payout-list"></ul>
+          </div>
+
+          <button id="generate-grid" class="btn primary">Generate board</button>
+          <p id="generate-hint" class="hint subtle-hint" role="status"></p>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel board-panel">
+      <header class="panel-header board-header">
+        <span class="section-number">03</span>
+        <div class="section-title">
+          <h2>Game board</h2>
+          <p>Numbers and owners are randomized.</p>
+        </div>
+        <button id="toggle-clean-view" class="btn secondary compact">Print view</button>
+      </header>
+      <div class="board-body">
+        <div id="grid-container">
+          <div class="empty-grid">
+            <strong>100</strong>
+            <span>Generate a board to fill the squares.</span>
+          </div>
+        </div>
       </div>
     </section>
-
-    <footer class="app-footer">
-      <span>Built for easy, fair Super Bowl squares.</span>
-    </footer>
-  </div>
+  </main>
 
   <script src="main.js"></script>
 </body>
 </html>
-
